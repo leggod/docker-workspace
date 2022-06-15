@@ -1,4 +1,4 @@
-version: '3.8'
+version: '3.9'
 
 # 多个容器集合
 services:
@@ -14,6 +14,7 @@ services:
         - INSTALL_MSSQL=${WORKSPACE_INSTALL_MSSQL}
         - NVM_NODEJS_ORG_MIRROR=${WORKSPACE_NVM_NODEJS_ORG_MIRROR}
         - INSTALL_NODE=${WORKSPACE_INSTALL_NODE}
+        - NODE_VERSION=${WORKSPACE_NODE_VERSION}
         - NPM_REGISTRY=${WORKSPACE_NPM_REGISTRY}
         - INSTALL_PNPM=${WORKSPACE_INSTALL_PNPM}
         - INSTALL_YARN=${WORKSPACE_INSTALL_YARN}
@@ -22,8 +23,9 @@ services:
     volumes:
       - ${APP_CODE_PATH_HOST}:${APP_CODE_PATH_CONTAINER}
     ports:
-      - 8080:8080
+      - 18080:8080
     networks:
       - spacenet
+    tty: true
 networks:
   spacenet:

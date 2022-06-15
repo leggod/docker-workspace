@@ -15,6 +15,7 @@ git clone https://github.com/laradock/laradock.git
 2. 进入 workspace 目录
  ```bash
 cp .env.example .env
+```
 
 ## 有用的提示
 
