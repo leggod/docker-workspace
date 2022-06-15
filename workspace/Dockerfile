@@ -22,7 +22,7 @@ RUN if [ ${INSTALL_NODE} = true ]; then \
     mkdir -p $NVM_DIR && \
     curl -o- https://ghproxy.com/https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.1/install.sh | bash \
         && . $NVM_DIR/nvm.sh \
-        && nvm install ${NODE_VERSION} --lts \ 
+        # && nvm install ${NODE_VERSION} --lts \ 
         # && nvm use ${NODE_VERSION} \
         # && if [ ${NPM_REGISTRY} ]; then \
         # npm config set registry ${NPM_REGISTRY} \
@@ -37,12 +37,11 @@ RUN if [ ${INSTALL_NODE} = true ]; then \
     echo '[ -s "$NVM_DIR/bash_completion" ] && . "$NVM_DIR/bash_completion" # This loads nvm bash_completion' >> "$HOME/.bashrc" \
 ;fi
 
-# nodejs
-
-# RUN if [ ${INSTALL_NODE} = true ]; then \
-#     bash -c 'source ~/.profile' && \
-    
-# ;fi
+# nodejs and tools
+RUN bash -c 'source $HOME/.nvm/nvm.sh   && \
+    nvm install node                    && \
+    npm install -g doctoc urchin eclint dockerfile_lint && \
+    npm install --prefix "$HOME/.nvm/"'
 
 #
 #--------------------------------------------------------------------------
