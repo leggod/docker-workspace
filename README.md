@@ -1,7 +1,7 @@
 ## 介绍
 
 workspace 努力简化创建开发环境过程。
-它包含预包装 Docker 镜像，提供你一个美妙的开发环境而不需要安装 PHP, NGINX, MySQL 和其他任何软件在你本地机器上。
+它包含预包装 Docker 镜像，提供你一个美妙的开发环境而不需要安装 PHP, NGINX, MySQL, Node 和其他任何软件在你本地机器上。
 
 **使用概览：**
 
@@ -9,12 +9,14 @@ workspace 努力简化创建开发环境过程。
 
 1. 将 workspace 放到你的项目同级文件夹中：
 ```bash
-git clone https://github.com/laradock/laradock.git
+git clone https://github.com/leggod/workspace.git
 ```
 
 2. 进入 workspace 目录
  ```bash
 cp .env.example .env
+
+docker-compose up -d
 ```
 
 ## 有用的提示

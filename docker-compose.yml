@@ -1,6 +1,5 @@
 version: '3.9'
 
-# 多个容器集合
 services:
   workspace:
     build:
@@ -18,14 +17,16 @@ services:
         - NPM_REGISTRY=${WORKSPACE_NPM_REGISTRY}
         - INSTALL_PNPM=${WORKSPACE_INSTALL_PNPM}
         - INSTALL_YARN=${WORKSPACE_INSTALL_YARN}
+        - INSTALL_NPM_VUE_CLI=${WORKSPACE_INSTALL_NPM_VUE_CLI}
         - INSTALL_PYTHON=${WORKSPACE_INSTALL_PYTHON}
         - INSTALL_PYTHON3=${WORKSPACE_INSTALL_PYTHON3}
     volumes:
       - ${APP_CODE_PATH_HOST}:${APP_CODE_PATH_CONTAINER}
     ports:
-      - 18080:8080
+      - 8080:18080
     networks:
       - spacenet
     tty: true
+    restart: unless-stopped
 networks:
   spacenet:

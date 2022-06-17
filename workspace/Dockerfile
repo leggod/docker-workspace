@@ -6,7 +6,8 @@ RUN sed -i s@/archive.ubuntu.com/@/mirrors.aliyun.com/@g /etc/apt/sources.list &
 
 # Install apt packages
 RUN apt update         && \
-    apt-get install -y curl && \
+    apt-get install -y curl \
+        git && \
     apt-get clean
 
 ARG INSTALL_NODE=false
@@ -22,26 +23,26 @@ RUN if [ ${INSTALL_NODE} = true ]; then \
     mkdir -p $NVM_DIR && \
     curl -o- https://ghproxy.com/https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.1/install.sh | bash \
         && . $NVM_DIR/nvm.sh \
-        # && nvm install ${NODE_VERSION} --lts \ 
-        # && nvm use ${NODE_VERSION} \
-        # && if [ ${NPM_REGISTRY} ]; then \
-        # npm config set registry ${NPM_REGISTRY} \
-        # ;fi \
-        # && ln -s `npm bin --global` ~/.node-bin \
+        && nvm install ${NODE_VERSION} --lts \ 
+        && nvm use ${NODE_VERSION} \
+        && if [ ${NPM_REGISTRY} ]; then \
+        npm config set registry ${NPM_REGISTRY} \
+        ;fi \
+        && if [ ${INSTALL_NPM_VUE_CLI} = true ]; then \
+        npm install -g @vue/cli \
+        ;fi \
+        && ln -s `npm bin --global` /root/.node-bin \
 ;fi
 
 RUN if [ ${INSTALL_NODE} = true ]; then \
-    # nvm
-    echo 'export NVM_DIR="$HOME/.nvm"' >> "$HOME/.bashrc" && \
-    echo '[ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"  # This loads nvm' >> "$HOME/.bashrc" && \
-    echo '[ -s "$NVM_DIR/bash_completion" ] && . "$NVM_DIR/bash_completion" # This loads nvm bash_completion' >> "$HOME/.bashrc" \
+    echo "" >> ~/.bashrc && \
+    echo 'export NVM_DIR="$HOME/.nvm"' >> ~/.bashrc && \
+    echo '[ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"  # This loads nvm' >> ~/.bashrc \
 ;fi
 
-# nodejs and tools
-RUN bash -c 'source $HOME/.nvm/nvm.sh   && \
-    nvm install node                    && \
-    npm install -g doctoc urchin eclint dockerfile_lint && \
-    npm install --prefix "$HOME/.nvm/"'
+# Add PATH for node
+ENV PATH $PATH:/root/.node-bin
+
 
 #
 #--------------------------------------------------------------------------
