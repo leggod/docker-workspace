@@ -9,6 +9,12 @@ RUN apt update         && \
     apt-get install -y curl \
         git && \
     apt-get clean
+    
+ENV DEBIAN_FRONTEND=noninteractive
+
+###########################################################################
+# Node / NVM:
+###########################################################################
 
 ARG INSTALL_NODE=false
 ARG NODE_VERSION
@@ -43,8 +49,88 @@ RUN if [ ${INSTALL_NODE} = true ]; then \
 # Add PATH for node
 ENV PATH $PATH:/root/.node-bin
 
+RUN if [ ${INSTALL_NODE} = true ]; then \
+    find $NVM_DIR -type f -name node -exec ln -s {} /usr/local/bin/node \; && \
+    NODE_MODS_DIR="$NVM_DIR/versions/node/$(node -v)/lib/node_modules" && \
+    ln -s $NODE_MODS_DIR/npm/bin/npm-cli.js /usr/local/bin/npm && \
+    ln -s $NODE_MODS_DIR/npm/bin/npx-cli.js /usr/local/bin/npx && \
+    ln -s $NODE_MODS_DIR/vue-cli/bin/vue /usr/local/bin/vue \
+;fi
 
-#
+###########################################################################
+# PNPM:
+###########################################################################
+
+
+ARG INSTALL_PNPM=false
+
+RUN if [ ${INSTALL_PNPM} = true ]; then \
+    npm install -g pnpm \
+;fi
+
+###########################################################################
+# PYTHON3:
+###########################################################################
+
+ARG INSTALL_PYTHON3=false
+
+RUN if [ ${INSTALL_PYTHON3} = true ]; then \
+  apt-get -y install python3 python3-dev build-essential  \
+  && curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py  \
+  && python3 get-pip.py  \
+  && rm get-pip.py  \
+  && python3 -m pip install --upgrade --force-reinstall pip  \
+  && python3 -m pip install --upgrade virtualenv \
+;fi
+
+###########################################################################
+# Composer:
+###########################################################################
+
+# # Add the composer.json
+# COPY ./composer.json /root/.composer/composer.json
+
+# # Add the auth.json for magento 2 credentials
+# COPY ./auth.json /root/.composer/auth.json
+
+# # Make sure that ~/.composer belongs to laradock
+# RUN chown -R root:root /root/.composer
+
+# # Export composer vendor path
+# RUN echo "" >> ~/.bashrc && \
+#     echo 'export PATH="$HOME/.composer/vendor/bin:$PATH"' >> ~/.bashrc
+
+# # Update composer
+# ARG COMPOSER_VERSION=2
+# ENV COMPOSER_VERSION ${COMPOSER_VERSION}
+# RUN set -eux; \
+#       if [ "$COMPOSER_VERSION" = "1" ] || [ "$COMPOSER_VERSION" = "2" ]; then \
+#           composer self-update --${COMPOSER_VERSION}; \
+#       else \
+#           composer self-update ${COMPOSER_VERSION}; \
+#       fi
+
+# # Check if auth file is disabled
+# ARG COMPOSER_AUTH=false
+# ENV COMPOSER_AUTH ${COMPOSER_AUTH}
+
+# RUN if [ ${COMPOSER_AUTH} = false ]; then \
+#     # remove the file
+#     rm /home/laradock/.composer/auth.json \
+# ;fi
+
+# ARG COMPOSER_REPO_PACKAGIST
+# ENV COMPOSER_REPO_PACKAGIST ${COMPOSER_REPO_PACKAGIST}
+
+# RUN if [ ${COMPOSER_REPO_PACKAGIST} ]; then \
+#     composer config -g repo.packagist composer ${COMPOSER_REPO_PACKAGIST} \
+# ;fi
+
+# # Export composer vendor path
+# RUN echo "" >> ~/.bashrc && \
+#     echo 'export PATH="~/.composer/vendor/bin:$PATH"' >> ~/.bashrc
+
+
 #--------------------------------------------------------------------------
 # Final Touch
 #--------------------------------------------------------------------------
