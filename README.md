@@ -45,6 +45,6 @@ docker-compose up -d
 
 ```
 "registry-mirrors": [
-    "https://2rokrgxv.mirror.aliyuncs.com"
-  ]
+  "https://2rokrgxv.mirror.aliyuncs.com"
+]
 ```
