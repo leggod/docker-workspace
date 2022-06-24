@@ -747,28 +747,28 @@ ARG INSTALL_IMAGEMAGICK=false
 ARG IMAGEMAGICK_VERSION=latest
 ENV IMAGEMAGICK_VERSION ${IMAGEMAGICK_VERSION}
 
-RUN if [ ${INSTALL_IMAGEMAGICK} = true ]; then \
-    echo printf 'Acquire\n{\n http::User-Agent "Mozilla/5.0 (Windows NT 5.1; rv:25.0) \nGecko/20100101 Firefox/25.0";\n};' > /etc/apt/apt.conf && \
-    apt-get install -yqq libmagickwand-dev imagemagick && \
-    if [ $(php -r "echo PHP_MAJOR_VERSION;") = "8" ]; then \
-      cd /tmp && \
-      if [ ${IMAGEMAGICK_VERSION} = "latest" ]; then \
-        git clone https://ghproxy.com/https://github.com/Imagick/imagick; \
-      else \
-        git clone --branch ${IMAGEMAGICK_VERSION} https://ghproxy.com/https://github.com/Imagick/imagick; \
-      fi && \
-      cd imagick && \
-      phpize && \
-      ./configure && \
-      make && \
-      make install && \
-      rm -r /tmp/imagick; \
-    else \
-      pecl install imagick; \
-    fi && \
-    docker-php-ext-enable imagick; \
-    php -m | grep -q 'imagick' \
-;fi
+# RUN if [ ${INSTALL_IMAGEMAGICK} = true ]; then \
+#     echo printf 'Acquire\n{\n http::User-Agent "Mozilla/5.0 (Windows NT 5.1; rv:25.0) \nGecko/20100101 Firefox/25.0";\n};' > /etc/apt/apt.conf && \
+#     apt-get install -y -yqq libmagickwand-dev imagemagick && \
+#     if [ $(php -r "echo PHP_MAJOR_VERSION;") = "8" ]; then \
+#       cd /tmp && \
+#       if [ ${IMAGEMAGICK_VERSION} = "latest" ]; then \
+#         git clone https://ghproxy.com/https://github.com/Imagick/imagick; \
+#       else \
+#         git clone --branch ${IMAGEMAGICK_VERSION} https://ghproxy.com/https://github.com/Imagick/imagick; \
+#       fi && \
+#       cd imagick && \
+#       phpize && \
+#       ./configure && \
+#       make && \
+#       make install && \
+#       rm -r /tmp/imagick; \
+#     else \
+#       pecl install imagick; \
+#     fi && \
+#     docker-php-ext-enable imagick; \
+#     php -m | grep -q 'imagick' \
+# ;fi
 
 ###########################################################################
 # SMB:
