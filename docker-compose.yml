@@ -123,6 +123,7 @@ services:
       - FAKETIME=${PHP_FPM_FAKETIME}
     depends_on:
       - workspace
+    restart: unless-stopped
     networks:
       - spacenet
   ### NGINX Server #########################################
@@ -145,6 +146,7 @@ services:
       - "${NGINX_HOST_HTTPS_PORT}:443"
     depends_on:
       - php-fpm
+    restart: unless-stopped
     networks:
       - spacenet
   ### MySQL ################################################
