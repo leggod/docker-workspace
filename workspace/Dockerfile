@@ -37,6 +37,9 @@ RUN if [ ${INSTALL_NODE} = true ]; then \
         && if [ ${INSTALL_NPM_VUE_CLI} = true ]; then \
         npm install -g @vue/cli \
         ;fi \
+        && if [ ${INSTALL_NPM_HEXO} = true ]; then \
+        npm install -g hexo \
+        ;fi \
         && ln -s `npm bin --global` /root/.node-bin \
 ;fi
 
