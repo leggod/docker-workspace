@@ -9,13 +9,16 @@ workspace 努力简化创建开发环境过程。
 
 1. 将 workspace 放到你的项目同级文件夹中：
 ```bash
-git clone https://github.com/leggod/workspace.git
+git clone https://github.com/leggod/docker-workspace.git
 ```
 
-2. 进入 workspace 目录
+2. 进入 workspace 目录，不需要的安装的插件或依赖可以在 `.env.example` 去掉 
  ```bash
 cp .env.example .env
+```
 
+3、运行
+```
 docker-compose up -d
 ```
 
