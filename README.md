@@ -7,12 +7,12 @@ workspace 努力简化创建开发环境过程。
 
 让我们了解使用它安装 `NGINX`, `PHP`, `Composer`, `MySQL` 和 `Redis`，然后运行 `workspace`
 
-1. 将 workspace 放到你的项目同级文件夹中：
+1、将 workspace 放到你的项目同级文件夹中：
 ```bash
 git clone https://github.com/leggod/docker-workspace.git
 ```
 
-2. 进入 workspace 目录，不需要的安装的插件或依赖可以在 `.env.example` 去掉 
+2、进入 workspace 目录，不需要的安装的插件或依赖可以在 `.env.example` 去掉 
  ```bash
 cp .env.example .env
 ```
