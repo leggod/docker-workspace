@@ -3,22 +3,24 @@
 workspace 努力简化创建开发环境过程。
 它包含预包装 Docker 镜像，提供你一个美妙的开发环境而不需要安装 PHP, NGINX, MySQL, Node 和其他任何软件在你本地机器上。
 
-**使用概览：**
+## 使用概览：（instructions）
 
 让我们了解使用它安装 `NGINX`, `PHP`, `Composer`, `MySQL` 和 `Redis`，然后运行 `workspace`
 
-1、将 workspace 放到你的项目同级文件夹中：
+1、将 `docker-workspace` 放到你的项目同级文件夹中：
+Put the `docker-workspace` in the same folder as your project
 ```bash
 git clone https://github.com/leggod/docker-workspace.git
 ```
 
 2、进入 workspace 目录，不需要的安装的插件或依赖可以在 `.env.example` 去掉 
+
  ```bash
 cp .env.example .env
 ```
 
 3、运行
-```
+```bash
 docker-compose up -d
 ```
 
