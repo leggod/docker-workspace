@@ -26,7 +26,7 @@ services:
     networks:
       - spacenet
     tty: true
-    restart: unless-stopped
+    restart: ${RESTART_MODE}
   ### PHP-FPM ##############################################
   php-fpm:
     build:
@@ -123,7 +123,7 @@ services:
       - FAKETIME=${PHP_FPM_FAKETIME}
     depends_on:
       - workspace
-    restart: unless-stopped
+    restart: ${RESTART_MODE}
     networks:
       - spacenet
   ### NGINX Server #########################################
@@ -146,7 +146,7 @@ services:
       - "${NGINX_HOST_HTTPS_PORT}:443"
     depends_on:
       - php-fpm
-    restart: unless-stopped
+    restart: ${RESTART_MODE}
     networks:
       - spacenet
   ### MySQL ################################################
@@ -168,6 +168,7 @@ services:
       - "${MYSQL_PORT}:3306"
     networks:
       - spacenet
+    restart: ${RESTART_MODE}
   ### Redis ################################################
   redis:
     build: ./redis
@@ -177,5 +178,6 @@ services:
       - "${REDIS_PORT}:6379"
     networks:
       - spacenet
+    restart: ${RESTART_MODE}
 networks:
   spacenet:
