@@ -28,20 +28,19 @@ ENV NVM_NODEJS_ORG_MIRROR ${NVM_NODEJS_ORG_MIRROR}
 RUN if [ ${INSTALL_NODE} = true ]; then \
     # Install nvm 
     mkdir -p $NVM_DIR && \
-    curl -o- https://ghproxy.com/https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.1/install.sh | bash \
+    curl -o- https://ghproxy.com/https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.2/install.sh | bash \
         && . $NVM_DIR/nvm.sh \
         && nvm install ${NODE_VERSION} --lts \ 
         && nvm use ${NODE_VERSION} \
         && if [ ${NPM_REGISTRY} ]; then \
-        npm config set registry ${NPM_REGISTRY} \
+            npm config set registry ${NPM_REGISTRY} \
         ;fi \
         && if [ ${INSTALL_NPM_VUE_CLI} = true ]; then \
-        npm install -g @vue/cli \
+            npm install -g @vue/cli \
         ;fi \
         && if [ ${INSTALL_NPM_HEXO} = true ]; then \
-        npm install -g hexo \
+            npm install -g hexo \
         ;fi \
-        && ln -s `npm bin --global` /root/.node-bin \
 ;fi
 
 RUN if [ ${INSTALL_NODE} = true ]; then \
@@ -49,6 +48,7 @@ RUN if [ ${INSTALL_NODE} = true ]; then \
     echo 'export NVM_DIR="$HOME/.nvm"' >> ~/.bashrc && \
     echo '[ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"  # This loads nvm' >> ~/.bashrc \
 ;fi
+
 
 # Add PATH for node
 ENV PATH $PATH:/root/.node-bin
