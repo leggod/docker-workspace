@@ -26,6 +26,8 @@ services:
     networks:
       - spacenet
     tty: true
+    environment:
+      - CHOKIDAR_USEPOLLING=true
     restart: ${RESTART_MODE}
   ### PHP-FPM ##############################################
   php-fpm:
