@@ -23,6 +23,9 @@ services:
     ports:
       - 18080:8080
       - 4000:4000
+      # nuxt port
+      - 3000:3000
+      - 24678:24678
     networks:
       - spacenet
     tty: true
