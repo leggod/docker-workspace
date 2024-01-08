@@ -5,6 +5,7 @@ services:
     build:
       context: ./workspace
       args:
+        - PHP_VERSION=${PHP_VERSION}
         - COMPOSER_GLOBAL_INSTALL=${WORKSPACE_INSTALL_COMPOSER}
         - COMPOSER_VERSION=${WORKSPACE_COMPOSER_VERSION}
         - COMPOSER_AUTH=${WORKSPACE_COMPOSER_AUTH}

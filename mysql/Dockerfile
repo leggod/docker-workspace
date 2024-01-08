@@ -1,8 +1,6 @@
 ARG MYSQL_VERSION
 FROM mysql:${MYSQL_VERSION}
 
-LABEL maintainer="Xin Shan <leggod.com@gmail.com>"
-
 #####################################
 # Set Timezone
 #####################################
@@ -14,7 +12,5 @@ RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone &
 COPY my.cnf /etc/mysql/conf.d/my.cnf
 
 RUN chmod 0444 /etc/mysql/conf.d/my.cnf
-
-CMD ["mysqld"]
 
 EXPOSE 3306

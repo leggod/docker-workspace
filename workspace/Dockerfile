@@ -1,16 +1,31 @@
-FROM ubuntu:rolling
+FROM ubuntu:latest
 LABEL maintainer="xin shan <leggod.com@gmail.com>"
+RUN sed -i 's/archive.ubuntu.com/mirrors.aliyun.com/g' /etc/apt/sources.list && \
+    sed -i 's/security.ubuntu.com/mirrors.aliyun.com/g' /etc/apt/sources.list
 
-RUN sed -i s@/archive.ubuntu.com/@/mirrors.aliyun.com/@g /etc/apt/sources.list && \
-    sed -i s/security.ubuntu.com/mirrors.aliyun.com/g /etc/apt/sources.list
+USER root
 
-# Install apt packages
-RUN apt update         && \
-    apt-get install -y curl \
-        git && \
-    apt-get clean
-    
-ENV DEBIAN_FRONTEND=noninteractive
+ARG LARADOCK_PHP_VERSION
+ENV LARADOCK_PHP_VERSION ${PHP_VERSION}
+# always run apt update when start and after add new source list, then clean up at end.
+# 安装软件包以添加外部仓库
+RUN apt-get update && apt-get install -yqq software-properties-common
+
+# 添加 ppa:ondrej/php 仓库
+RUN add-apt-repository ppa:ondrej/php
+
+# 安装 PHP 8.2 和必要的扩展
+RUN apt-get update && apt-get install -yqq php${LARADOCK_PHP_VERSION} php${LARADOCK_PHP_VERSION}-cli php${LARADOCK_PHP_VERSION}-common php${LARADOCK_PHP_VERSION}-json php${LARADOCK_PHP_VERSION}-phar
+
+
+###########################################################################
+# Set Timezone
+###########################################################################
+
+ARG TZ=UTC
+ENV TZ ${TZ}
+
+RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 
 ###########################################################################
 # Node / NVM:
@@ -28,7 +43,7 @@ ENV NVM_NODEJS_ORG_MIRROR ${NVM_NODEJS_ORG_MIRROR}
 RUN if [ ${INSTALL_NODE} = true ]; then \
     # Install nvm 
     mkdir -p $NVM_DIR && \
-    curl -o- https://ghproxy.com/https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.2/install.sh | bash \
+    curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.2/install.sh | bash \
         && . $NVM_DIR/nvm.sh \
         && nvm install ${NODE_VERSION} --lts \ 
         && nvm use ${NODE_VERSION} \
@@ -91,48 +106,63 @@ RUN if [ ${INSTALL_PYTHON3} = true ]; then \
 # Composer:
 ###########################################################################
 
-# # Add the composer.json
-# COPY ./composer.json /root/.composer/composer.json
 
-# # Add the auth.json for magento 2 credentials
-# COPY ./auth.json /root/.composer/auth.json
+# Install Composer
+RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
-# # Make sure that ~/.composer belongs to laradock
-# RUN chown -R root:root /root/.composer
+# Add the composer.json
+COPY ./composer.json /root/.composer/composer.json
 
-# # Export composer vendor path
-# RUN echo "" >> ~/.bashrc && \
-#     echo 'export PATH="$HOME/.composer/vendor/bin:$PATH"' >> ~/.bashrc
+# Add the auth.json for Magento 2 credentials
+COPY ./auth.json /root/.composer/auth.json
 
-# # Update composer
-# ARG COMPOSER_VERSION=2
-# ENV COMPOSER_VERSION ${COMPOSER_VERSION}
-# RUN set -eux; \
-#       if [ "$COMPOSER_VERSION" = "1" ] || [ "$COMPOSER_VERSION" = "2" ]; then \
-#           composer self-update --${COMPOSER_VERSION}; \
-#       else \
-#           composer self-update ${COMPOSER_VERSION}; \
-#       fi
+# Make sure that ~/.composer belongs to root
+RUN chown -R root:root /root/.composer
 
-# # Check if auth file is disabled
-# ARG COMPOSER_AUTH=false
-# ENV COMPOSER_AUTH ${COMPOSER_AUTH}
+# Export composer vendor path
+RUN echo "" >> ~/.bashrc && \
+    echo 'export PATH="$HOME/.composer/vendor/bin:$PATH"' >> ~/.bashrc
 
-# RUN if [ ${COMPOSER_AUTH} = false ]; then \
-#     # remove the file
-#     rm /home/laradock/.composer/auth.json \
-# ;fi
+# Update composer
+ARG COMPOSER_VERSION=2
+ENV COMPOSER_VERSION ${COMPOSER_VERSION}
+RUN set -eux; \
+    if [ "$COMPOSER_VERSION" = "1" ] || [ "$COMPOSER_VERSION" = "2" ] || [ "$COMPOSER_VERSION" = "2.2" ]; then \
+        composer self-update --${COMPOSER_VERSION}; \
+    else \
+        composer self-update ${COMPOSER_VERSION}; \
+    fi
 
-# ARG COMPOSER_REPO_PACKAGIST
-# ENV COMPOSER_REPO_PACKAGIST ${COMPOSER_REPO_PACKAGIST}
 
-# RUN if [ ${COMPOSER_REPO_PACKAGIST} ]; then \
-#     composer config -g repo.packagist composer ${COMPOSER_REPO_PACKAGIST} \
-# ;fi
 
-# # Export composer vendor path
-# RUN echo "" >> ~/.bashrc && \
-#     echo 'export PATH="~/.composer/vendor/bin:$PATH"' >> ~/.bashrc
+# Check if global install need to be ran
+ARG COMPOSER_GLOBAL_INSTALL=false
+ENV COMPOSER_GLOBAL_INSTALL ${COMPOSER_GLOBAL_INSTALL}
+
+RUN if [ ${COMPOSER_GLOBAL_INSTALL} = true ]; then \
+    # run the install
+    composer global install \
+;fi
+
+# Check if auth file is disabled
+ARG COMPOSER_AUTH_JSON=false
+ENV COMPOSER_AUTH_JSON ${COMPOSER_AUTH_JSON}
+
+RUN if [ ${COMPOSER_AUTH_JSON} = false ]; then \
+    # remove the file
+    rm /home/laradock/.composer/auth.json \
+;fi
+
+ARG COMPOSER_REPO_PACKAGIST
+ENV COMPOSER_REPO_PACKAGIST ${COMPOSER_REPO_PACKAGIST}
+
+RUN if [ ${COMPOSER_REPO_PACKAGIST} ]; then \
+    composer config -g repo.packagist composer ${COMPOSER_REPO_PACKAGIST} \
+;fi
+
+# Export composer vendor path
+RUN echo "" >> ~/.bashrc && \
+    echo 'export PATH="~/.composer/vendor/bin:$PATH"' >> ~/.bashrc
 
 
 #--------------------------------------------------------------------------
