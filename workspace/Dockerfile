@@ -5,17 +5,17 @@ RUN sed -i 's/archive.ubuntu.com/mirrors.aliyun.com/g' /etc/apt/sources.list && 
 
 USER root
 
-ARG LARADOCK_PHP_VERSION
-ENV LARADOCK_PHP_VERSION ${PHP_VERSION}
+ARG PHP_VERSION
+ENV PHP_VERSION ${PHP_VERSION}
 # always run apt update when start and after add new source list, then clean up at end.
 # 安装软件包以添加外部仓库
-RUN apt-get update && apt-get install -yqq software-properties-common
+RUN apt-get update && apt-get install -yqq software-properties-common curl
 
 # 添加 ppa:ondrej/php 仓库
 RUN add-apt-repository ppa:ondrej/php
 
-# 安装 PHP 8.2 和必要的扩展
-RUN apt-get update && apt-get install -yqq php${LARADOCK_PHP_VERSION} php${LARADOCK_PHP_VERSION}-cli php${LARADOCK_PHP_VERSION}-common php${LARADOCK_PHP_VERSION}-json php${LARADOCK_PHP_VERSION}-phar
+# 安装 ${PHP_VERSION}
+RUN apt-get update && apt-get install -yqq php${PHP_VERSION} php${PHP_VERSION}-fpm php${PHP_VERSION}-cli
 
 
 ###########################################################################
@@ -41,11 +41,11 @@ ARG NVM_NODEJS_ORG_MIRROR
 ENV NVM_NODEJS_ORG_MIRROR ${NVM_NODEJS_ORG_MIRROR}
 
 RUN if [ ${INSTALL_NODE} = true ]; then \
-    # Install nvm 
+    # Install nvm
     mkdir -p $NVM_DIR && \
     curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.2/install.sh | bash \
         && . $NVM_DIR/nvm.sh \
-        && nvm install ${NODE_VERSION} --lts \ 
+        && nvm install ${NODE_VERSION} --lts \
         && nvm use ${NODE_VERSION} \
         && if [ ${NPM_REGISTRY} ]; then \
             npm config set registry ${NPM_REGISTRY} \
@@ -133,6 +133,14 @@ RUN set -eux; \
         composer self-update ${COMPOSER_VERSION}; \
     fi
 
+# 允许Composer以root用户运行
+ENV COMPOSER_ALLOW_SUPERUSER=1
+
+# 设置环境变量，确保全局包的可执行文件可被找到
+ENV PATH="${PATH}:/root/.config/composer/vendor/bin"
+
+# 如果你有全局composer.json文件，你应该把它复制到镜像中
+COPY ./composer.json /root/.config/composer/composer.json
 
 
 # Check if global install need to be ran
@@ -150,7 +158,7 @@ ENV COMPOSER_AUTH_JSON ${COMPOSER_AUTH_JSON}
 
 RUN if [ ${COMPOSER_AUTH_JSON} = false ]; then \
     # remove the file
-    rm /home/laradock/.composer/auth.json \
+    rm /root/.composer/auth.json \
 ;fi
 
 ARG COMPOSER_REPO_PACKAGIST

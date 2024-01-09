@@ -4,12 +4,15 @@
 #--------------------------------------------------------------------------
 #
 
-# Note: Base Image name format {php-version}
+# 基本映像名称格式 {php-version}
 #
 ARG PHP_VERSION
 FROM php:${PHP_VERSION}-fpm
 
-RUN sed -i 's/deb.debian.org/mirrors.ustc.edu.cn/g' /etc/apt/sources.list
+# 将Debian软件包源替换为中国的源
+RUN sed -i 's/deb.debian.org/mirrors.aliyun.com/g' /etc/apt/sources.list && \
+    sed -i 's/security.debian.org/mirrors.aliyun.com/g' /etc/apt/sources.list
+
 
 # always run apt update when start and after add new source list, then clean up at end.
 RUN set -xe; \
@@ -964,7 +967,7 @@ RUN if [ ${INSTALL_AUDIOWAVEFORM} = true ]; then \
    && make \
    && make install \
 ;fi
- 
+
 
 #####################################
 # wkhtmltopdf:
